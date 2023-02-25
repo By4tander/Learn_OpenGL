@@ -15,7 +15,7 @@ void process_input(GLFWwindow *window);
  * 在这里我们暂时不需要理解它具体是怎么发挥作用的。
  */
 const char *my_vertex_shader_source = "#version 330 core\n"
-                                      "layout (location = 0) in vec3 aPos;\n"
+                                      "layout (location = 0) in vec3 aPos;\n"//定了输入变量的位置值(Location)
                                       "void main()\n"
                                       "{\n"
                                       "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
@@ -30,19 +30,30 @@ const char *my_fragment_shader_source = "#version 330 core\n"
 auto compile_shader(const char *vertex_shader_source, const char *fragment_shader_source) -> unsigned int
 {
     // 编译Vertex Shader
-    unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);//创建着色器对象
+    //glShaderSource函数把要编译的着色器对象作为第一个参数。
+    // 第二参数指定了传递的源码字符串数量，这里只有一个。
+    // 第三个参数是顶点着色器真正的源码，第四个参数我们先设置为NULL。
     glShaderSource(vertex_shader_id, 1, &vertex_shader_source, nullptr);
     glCompileShader(vertex_shader_id);
 
     // 编译Fragment Shader
+    //片段着色器所做的是计算像素最后的颜色输出
     unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader_id, 1, &fragment_shader_source, nullptr);
     glCompileShader(fragment_shader_id);
 
     // 创建Shader Program
-    unsigned int shader_program_id = glCreateProgram();
-    glAttachShader(shader_program_id, vertex_shader_id);
+    //它是多个着色器合并之后并最终链接完成的版本。
+    // 如果要使用刚才编译的着色器我们必须把它们链接(Link)为一个着色器程序对象，
+    // 然后在渲染对象的时候激活这个着色器程序
+    // 已激活着色器程序的着色器将在我们发送渲染调用的时候被使用。
+    //它会把每个着色器的输出链接到下个着色器的输入。
+    // 当输出和输入不匹配的时候，你会得到一个连接错误
+    unsigned int shader_program_id = glCreateProgram();//创建一个程序，返回新程序对象的ID
     glAttachShader(shader_program_id, fragment_shader_id);
+    glAttachShader(shader_program_id, vertex_shader_id);
+
     glLinkProgram(shader_program_id);
 
     /**
@@ -103,8 +114,9 @@ auto pass_geometry_data_to_GPU(float vertices_array[], int vertices_array_size, 
     glBindVertexArray(VAO); // 绑定VAO，这样后面的操作都会作用在这块内存上。
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // 绑定VBO，这样后面的操作都会作用在这块内存上。
+    //上两句相当于把vbo存给vao
     glBufferData(GL_ARRAY_BUFFER, vertices_array_size, vertices_array, GL_STATIC_DRAW); // 将数据传递到VBO中。
-
+    //IO，overhead瓶颈，时间花费
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // 绑定EBO，这样后面的操作都会作用在这块内存上。
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_array_size, indices_array, GL_STATIC_DRAW); // 将数据传递到EBO中。
 
@@ -114,7 +126,7 @@ auto pass_geometry_data_to_GPU(float vertices_array[], int vertices_array_size, 
     glBindBuffer(GL_ARRAY_BUFFER, 0); // 解绑VBO
     glBindVertexArray(0); // 解绑VAO
 
-    return VAO;
+    return VAO;//？？？
 }
 
 auto main() -> int
@@ -129,8 +141,10 @@ auto main() -> int
      * 在初始化OpenGL之后，我们可以做一些在渲染之前的准备工作。
      * 比如预加载数据到GPU以及预编译Shader，都是在这里进行的。
      */
-    unsigned int shader_program_id = compile_shader(my_vertex_shader_source, my_fragment_shader_source);
-    unsigned int triangle_VAO = pass_geometry_data_to_GPU(vertices, sizeof(vertices), indices, sizeof(indices));
+    unsigned int shader_program_id =
+            compile_shader(my_vertex_shader_source, my_fragment_shader_source);
+    unsigned int triangle_VAO=
+            pass_geometry_data_to_GPU(vertices, sizeof(vertices), indices, sizeof(indices));
     // -------------------- NEW END --------------------
 
     while (!glfwWindowShouldClose(window))
@@ -145,7 +159,9 @@ auto main() -> int
          */
         glUseProgram(shader_program_id); // 绘制之前一定要指定使用哪个shader program
         glBindVertexArray(triangle_VAO); // 指定想要绘制的图形的数据（这里是两个三角形）
-        //        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // 在绘制之前，我们可以选择指定线框模式绘制（如果要回到原来的模式，一定要在设置一遍glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)给它设置回来）
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // 在绘制之前，我们可以选择指定线框模式绘制
+        //        （如果要回到原来的模式，一定要在设置一遍glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)给它设置回来）
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // 绘制两个三角形
         // -------------------- NEW END --------------------
 

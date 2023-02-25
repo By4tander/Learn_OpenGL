@@ -48,11 +48,29 @@ auto main() -> int
         // -------------------- NEW START --------------------
         process_input(window); // 处理用户输入
         // -------------------- NEW END --------------------
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        //---------------渲染循环区域--------------
+
+        glClearColor(1.0f, 1.0f, 0.9f, 1.0f);//状态设置函数
+        //设置GLclear清除的颜色缓冲。
+        // 如此时表示蓝色红色都全部清除，黄色还剩0.1
+
+        //调用glClear函数来清空屏幕的颜色缓冲
+        // 它接受一个缓冲位(Buffer Bit)来指定要清空的缓冲
+        // 可能的缓冲位有GL_COLOR_BUFFER_BIT
+        glClear(GL_COLOR_BUFFER_BIT);//状态使用函数
+
+
+        //------------渲染循环结束区----------------
+
+        //必须有，不然全黑没交换过颜色缓冲
+        glfwSwapBuffers(window);//函数会交换颜色缓冲
+        // （它是一个储存着GLFW窗口每一个像素颜色值的大缓冲）
+        // 它在这一迭代中被用来绘制，并且将会作为输出显示在屏幕上。
+
+        //必须有，不然没窗口显示
+        glfwPollEvents();//检查有没有触发事件（比如键盘输入、鼠标移动等）
+        // 更新窗口状态，并调用对应的回调函数（可以通过回调方法手动设置）
     }
 
     return 0;
