@@ -43,7 +43,7 @@ const char *fragmentShaderSource01= "#version 330 core\n"
                                      "{\n"
                                      "   FragColor = vec4(0.2f, 0.7f, 0.5f, 1.0f);\n"
                                      "}\n\0";
-int main()
+auto main()->int
 {
     //实例化glfw窗口
     glfwInit();
