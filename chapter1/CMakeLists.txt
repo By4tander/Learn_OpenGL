@@ -4,6 +4,7 @@ set(SRCS
         02_Homework
         02HelloTriangle
         03ShadersInFile
+        03_Homework
         04PassValueToShader
         05PassValueToLocation
         06SetupShaderClass
@@ -19,7 +20,7 @@ foreach(SRC ${SRCS})
             include/texture.h include/texture.cpp
             include/renderable_object.h include/renderable_object.cpp
             include/camera.h include/camera.cpp
-            src/02_Homework.cpp)
+            )
     set_target_properties(${SRC} PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS ON)
     target_include_directories(
             ${SRC}

@@ -11,14 +11,14 @@ void process_input(GLFWwindow *window);
 auto compile_shader(const char *vertex_shader_source, const char *fragment_shader_source) -> unsigned int;
 auto pass_geometry_data_to_GPU(float vertices_array[], int vertices_array_size, unsigned int indices_array[], int indices_array_size) -> unsigned int;
 
-float vertices[] = {0.5f, 0.5f, 0.0f,  // top right
+float vertices[] = {0.0f, 0.5f, 0.0f,  // top right
                     0.5f, -0.5f, 0.0f,  // bottom right
                     -0.5f, -0.5f, 0.0f,  // bottom left
-                    -0.5f, 0.5f, 0.0f   // top left
+                     // top left
 };
 unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
+        0, 1, 2,  // first Triangle
+        //1, 2, 3   // second Triangle
 };
 
 /**
@@ -33,8 +33,10 @@ auto read_file(const std::string &file_path) -> std::string
     return file_content;
 }
 
+
 auto main() -> int
 {
+
     init_glfw();
     auto *window = create_window(800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
