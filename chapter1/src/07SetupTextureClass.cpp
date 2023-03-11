@@ -12,8 +12,10 @@ auto pass_geometry_data_to_GPU(float vertices_array[], int vertices_array_size, 
 /**
  * 更新vertices，指定纹理坐标
  */
+
+//注意纹理坐标，是从左下角（0，0）开始
 float vertices[] = {
-        // positions         // colors         // texture coords
+        // positions                    // colors                       // texture coords
         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom left
         0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f   // top
@@ -25,7 +27,10 @@ unsigned int indices[] = {  // note that we start from 0!
 /**
  * 这里因为顶点的数据变了，所以我们需要重新写一下把顶点数据传到顶点着色器的函数。
  */
-auto pass_geometry_data_to_GPU(float vertices_array[], int vertices_array_size, unsigned int indices_array[], int indices_array_size) -> unsigned int
+auto pass_geometry_data_to_GPU(float vertices_array[],
+                               int vertices_array_size,
+                               unsigned int indices_array[],
+                               int indices_array_size) -> unsigned int
 {
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -76,7 +81,8 @@ auto main() -> int
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     init_glad();
 
-    Shader shader(MY_SHADER_DIR + std::string("07shader_vertex.glsl"), MY_SHADER_DIR + std::string("07shader_fragment.glsl"));
+    Shader shader(MY_SHADER_DIR + std::string("07shader_vertex.glsl"),
+                  MY_SHADER_DIR + std::string("07shader_fragment.glsl"));
     Texture texture(MY_TEXTURE_DIR + std::string("wall.jpg"));
     unsigned int triangle_VAO = pass_geometry_data_to_GPU(vertices, sizeof(vertices), indices, sizeof(indices));
 

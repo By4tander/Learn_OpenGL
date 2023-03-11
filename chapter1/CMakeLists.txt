@@ -9,6 +9,7 @@ set(SRCS
         05PassValueToLocation
         06SetupShaderClass
         07SetupTextureClass
+        07_Homework
         08SetupRenderObjectClass
         09IntroduceMVP
         )
