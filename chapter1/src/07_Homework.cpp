@@ -16,15 +16,26 @@ const unsigned int WIDTH=800;
 const unsigned int HEIGHT=600;
 
 float vertices[] = {
-        // positions          // colors           // texture coords
+         //positions                    // colors                    // texture coords
         0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
         -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top left
+
+//        // positions                    // colors                    // texture coords
+//        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,// top left
+//        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,// bottom left
+//        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, // bottom right
+//        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  1.0f, 1.0f // top right
 };
+
+
 unsigned int indices[]={
         0,1,3,
         1,2,3
+
+//        2,3,1
+//        ,0,1,3
 };
 
 
@@ -40,9 +51,18 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    //create window
+    //create window，must before the initialization of glad
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
     glfwMakeContextCurrent(window);
+
+    //always remember to initialize glad!
+    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+    {
+        std::cout<<"GLAD faied"<<std::endl;
+        return -1;
+    }
+
+
 
     Shader shader(MY_SHADER_DIR + std::string("07shader_vertex.glsl"),
                   MY_SHADER_DIR + std::string("07shader_fragment.glsl"));
@@ -54,7 +74,7 @@ int main()
     unsigned int texture1,texture2;
     //texture1
     glGenTextures(1,&texture1);
-
+    glBindTexture(GL_TEXTURE_2D,texture1);
     //wraping parameters
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
@@ -79,10 +99,13 @@ int main()
     {
         std::cout<<"Failed to load texture"<<std::endl;
     }
-
+    //free buffer
     stbi_image_free(data);
 
+    //------------
+    //texture2
     glGenTextures(1,&texture2);
+    glBindTexture(GL_TEXTURE_2D,texture2);
 
     //wraping parameters
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
@@ -96,7 +119,7 @@ int main()
     int widt,heigh,crChannels;//crchannels颜色通道数
     //以下函数用于反转y坐标，因为OpenGL的纹理坐标起点在于左下角. 而图像纹理坐标的起点在于左上角.
     stbi_set_flip_vertically_on_load(true);
-    const std::string texturepath2=MY_TEXTURE_DIR+std::string("wall.jpg");
+    const std::string texturepath2=MY_TEXTURE_DIR+std::string("emoji.jpeg");
     unsigned char *data2=stbi_load(texturepath2.c_str(),&widt,&heigh,&crChannels,0);
 
     if(data2)
@@ -109,6 +132,7 @@ int main()
         std::cout<<"Failed to load texture"<<std::endl;
     }
     stbi_image_free(data2);
+
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     shader.use(); // don't forget to activate/use the shader before setting uniforms!
@@ -116,6 +140,9 @@ int main()
     glUniform1i(glGetUniformLocation(shader.ID, "texture1"), 0);
     // or set it via the texture class
     shader.set_int("texture2", 1);//
+
+
+
     while(!glfwWindowShouldClose(window))
     {
         processInput(window);
