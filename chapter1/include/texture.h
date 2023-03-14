@@ -16,5 +16,6 @@ public:
 public:
     Texture(const std::string &texture_path);
     void bind();
+    auto getID()->unsigned int;
 };
 #endif //LEARNOPENGL_TEXTURE_H

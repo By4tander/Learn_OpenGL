@@ -19,9 +19,7 @@ void processInput(GLFWwindow *window)
     //查用户是否按下了返回键(Esc)
     if(glfwGetKey(window,GLFW_KEY_ESCAPE)==GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    //如果用户的确按下了返回键，
-    // 我们将通过glfwSetwindowShouldClose使用把WindowShouldClose属性设置为
-    // true的方法关闭GLFW
+
 }
 
 const char *vertexShaderSource ="#version 330 core\n"
