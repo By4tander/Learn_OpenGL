@@ -10,5 +10,6 @@ void main()
 {
    ourColor = aColor;
    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+   //in task1, "1-aTexCoord.x" has the same result to "-aTexCoord.x"
    TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }

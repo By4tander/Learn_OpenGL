@@ -75,8 +75,18 @@ int main()
 
     unsigned int rectangle_VAO = pass_geometry_data_to_GPU(vertices, sizeof(vertices), indices, sizeof(indices));
 
-    Texture texture1(MY_TEXTURE_DIR+std::string("emoji.jpeg"));
+    Texture texture1(MY_TEXTURE_DIR+std::string("emoji.jpg"));
     Texture texture2(MY_TEXTURE_DIR+std::string("wall.jpg"));
+
+    //---------修改uniform一定要use-------
+    shader.use();
+
+    //非常重要，以下实现多个纹理单元的应用
+    //glUniform1i(glGetUniformLocation(shader.ID,"texture1"),0);
+
+    glUniform1i(glGetUniformLocation(shader.ID,"texture2"),1);
+
+    //shader.set_int("texutre2",1);
 
 
     while(!glfwWindowShouldClose(window))
@@ -85,10 +95,6 @@ int main()
 
         glClearColor(0.2f,0.3f,0.3f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        shader.use();
-        texture1.bind();
-        texture2.bind();
 
         //纹理单元操作，会默认激活0
         glActiveTexture(GL_TEXTURE0);
