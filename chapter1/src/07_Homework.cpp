@@ -8,7 +8,7 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow*window,int width, int height);
-void processInput(GLFWwindow*window);
+void processInput(GLFWwindow*window,int shaderID);
 auto pass_geometry_data_to_GPU(float vertices_array[], int vertices_array_size, unsigned int indices_array[], int indices_array_size) ->unsigned int ;
 void init_glfw(){ glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);
@@ -36,12 +36,20 @@ auto init_glad()->bool
 const unsigned int WIDTH=800;
 const unsigned int HEIGHT=600;
 
+float value=0.5;//用于flap切换
+
 float vertices[] = {
+        //---------注意texture coords-------
+        //通常纹理坐标范围再0,0到1，1,注意00在左下角
+        //---在这个范围内不会有设置环绕方式不会有变化
+        //再范围外设置环绕方式会有很大不同，见Texture类
+        //-----------------------------------
+
          //positions                    // colors                    // texture coords
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top left
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 2.0f, 2.0f, // top right
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 2.0f, -1.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, -1.0f, // bottom left
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 2.0f  // top left
 
 //        // positions                    // colors                    // texture coords
 //        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f,// top left
@@ -82,17 +90,17 @@ int main()
     shader.use();
 
     //非常重要，以下实现多个纹理单元的应用
+    //0默认启用
     //glUniform1i(glGetUniformLocation(shader.ID,"texture1"),0);
 
     glUniform1i(glGetUniformLocation(shader.ID,"texture2"),1);
-
-    //shader.set_int("texutre2",1);
+    //set_int内在就是glUniform1i
+    shader.set_int("texture2",1);
 
 
     while(!glfwWindowShouldClose(window))
     {
-        processInput(window);
-
+        processInput(window,shader.ID);
         glClearColor(0.2f,0.3f,0.3f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -151,13 +159,26 @@ auto pass_geometry_data_to_GPU(float vertices_array[],
 
 }
 
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window,int shaderID)
 {
     //查用户是否按下了返回键(Esc)
     if(glfwGetKey(window,GLFW_KEY_ESCAPE)==GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
+    if(glfwGetKey(window,GLFW_KEY_UP)==GLFW_PRESS)
+    {
+        value+=0.01f;
+        if(value>=1.0f)     value=1.0f;
+        glUniform1f(glGetUniformLocation(shaderID,"flap"),value);
+    }
+    if(glfwGetKey(window,GLFW_KEY_DOWN)==GLFW_PRESS)
+    {
+        value-=0.01f;
+        if(value<=0.0f)     value=0.0f;
+        glUniform1f(glGetUniformLocation(shaderID,"flap"),value);
+    }
 }
+
+
 
 void framebuffer_size_callback(GLFWwindow*window,int width, int height)
 {
