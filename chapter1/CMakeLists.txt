@@ -12,6 +12,7 @@ set(SRCS
         07_Homework
         08SetupRenderObjectClass
         09IntroduceMVP
+        09_MVP_tasks
         )
 
 foreach(SRC ${SRCS})
