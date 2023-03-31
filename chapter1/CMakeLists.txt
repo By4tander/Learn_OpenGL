@@ -13,8 +13,8 @@ set(SRCS
         08SetupRenderObjectClass
         09IntroduceMVP
         09_math
-        09_3d
         09_3D_task
+        10Camera
         )
 
 foreach(SRC ${SRCS})
@@ -24,7 +24,7 @@ foreach(SRC ${SRCS})
             include/texture.h include/texture.cpp
             include/renderable_object.h include/renderable_object.cpp
             include/camera.h include/camera.cpp
-           )
+            )
     set_target_properties(${SRC} PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS ON)
     target_include_directories(
             ${SRC}
