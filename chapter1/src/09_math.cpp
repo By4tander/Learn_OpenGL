@@ -66,11 +66,17 @@ auto main() -> int
         glm::mat4 trans = glm::mat4(1.0f);
 
         //-------------------逆时针旋转90度-------------------
-        //radians将角度转化为弧度，绕z轴旋转
-        trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+        //radians将角度转化为弧度，绕z轴旋转（观察沿x，y，z旋转有什么不同
+        //trans = glm::rotate(trans, glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
 
-        //缩放0.5倍
-        trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+        //随时间旋转。注意先旋转再位移和先位移再旋转顺序不同的结果不同。
+        trans=glm::rotate(trans,(float)glfwGetTime(),glm::vec3 (0.0f,0.0f,1.0f));
+        trans=glm::translate(trans,glm::vec3(0.5f,-0.5f,0.0f));//放在右下角
+
+
+        //缩放，注意轴的对应关系
+        trans = glm::scale(trans, glm::vec3(0.5, 1.0, 1.0));
 
         unsigned int transformLocation=glGetUniformLocation(shader.ID,"transform");
 
@@ -79,6 +85,7 @@ auto main() -> int
         //最后一个参数是真正的矩阵数据，但是GLM并不是把它们的矩阵储存为OpenGL所希望接受的那种
         // 因此我们要先用GLM的自带的函数value_ptr来变换这些数据。
         glUniformMatrix4fv(transformLocation,1,GL_FALSE,glm::value_ptr(trans));
+
         //         pass transformation matrices to the shader
         //shader.set_mat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         //shader.set_mat4("view", view);
